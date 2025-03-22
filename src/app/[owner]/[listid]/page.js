@@ -135,37 +135,7 @@ export default function ShelfPage() {
   };
 
   return (
-    <main className="shelf-container">
-      <div className="notifications-container">
-        <button
-          onClick={() => {
-            const newShow = !showNotifications;
-            setShowNotifications(newShow);
-            if (newShow) {
-              localStorage.setItem(`notifViewed-${owner}-${listid}`, 'true');
-            }
-          }}
-          className="notification-bell styled-bell"
-        >
-          🔔
-          {notifications.length > 0 && !showNotifications && (
-            <span className="notification-count styled-count">{notifications.length}</span>
-          )}
-        </button>
-        {showNotifications && (
-          <div className="notification-overlay styled-overlay">
-            <h3>Recent Updates</h3>
-            {notifications.map((book, i) => (
-              <div key={i} className="notification-entry styled-entry">
-                📘 "{book.title}" by {book.author}
-                <br />
-                <small>{new Date(book.createdAt?.seconds ? book.createdAt.seconds * 1000 : book.createdAt.toMillis()).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}</small>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
+    <>
       <h1>{owner === "corrine" ? "Corrine’s Shelf" : "Beth’s Shelf"}</h1>
 
       <div className="inputStack">
@@ -184,32 +154,23 @@ export default function ShelfPage() {
         </button>
       </div>
 
-      <table className="book-table">
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Author</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
+      <div className="inputStack">
+        <div className="book-list">
           {books.map((book) => (
-            <tr key={book.id} id={`book-${book.id}`}>
+            <div key={book.id} id={`book-${book.id}`} className="book-card">
               {editingId === book.id ? (
                 <>
-                  <td>
-                    <input
-                      value={editTitle}
-                      onChange={(e) => setEditTitle(toTitleCase(e.target.value))}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      value={editAuthor}
-                      onChange={(e) => setEditAuthor(toTitleCase(e.target.value))}
-                    />
-                  </td>
-                  <td className="button-group">
+                  <input
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(toTitleCase(e.target.value))}
+                    placeholder="Edit title"
+                  />
+                  <input
+                    value={editAuthor}
+                    onChange={(e) => setEditAuthor(toTitleCase(e.target.value))}
+                    placeholder="Edit author"
+                  />
+                  <div className="button-group">
                     <button
                       onClick={async () => {
                         await updateBook(book.id, {
@@ -228,13 +189,16 @@ export default function ShelfPage() {
                     >
                       Cancel
                     </button>
-                  </td>
+                  </div>
                 </>
               ) : (
                 <>
-                  <td>{book.title}</td>
-                  <td>{book.author}</td>
-                  <td className="button-group">
+
+                  <div className="book-info">
+                    <strong>{book.title}</strong>
+                    <span>by {book.author}</span>
+                  </div>
+                  <div className="button-group">
                     <button
                       onClick={() => {
                         setEditingId(book.id);
@@ -251,19 +215,16 @@ export default function ShelfPage() {
                     >
                       Delete
                     </button>
-                  </td>
+                  </div>
+
                 </>
               )}
-            </tr>
+            </div>
           ))}
-        </tbody>
-      </table>
-      <style jsx>{`
-        .highlight {
-          background-color: #fffbcc;
-          transition: background-color 0.5s ease;
-        }
-      `}</style>
-    </main>
+        </div>
+
+      </div>
+
+    </ >
   );
 }

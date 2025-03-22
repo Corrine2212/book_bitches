@@ -14,14 +14,14 @@ export default function Header() {
   return (
     <header className={styles.header}>
       <Link href="/" className={styles.title}>📚 Book Bitches</Link>
-      <div className={styles.notificationContainer}>
+      {/* <div className={styles.notificationContainer}>
         <button onClick={handleClick} className={styles.notificationBell}>
           🔔
           {count > 0 && !showNotifications && (
             <span className={styles.notificationCount}>{count}</span>
           )}
         </button>
-      </div>
+      </div> */}
     </header>
   );
 }
