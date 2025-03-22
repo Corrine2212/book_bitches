@@ -40,8 +40,8 @@ export default function HomePage() {
   return (
     <>
       {notifications.length > 0 && (
-        <div className="notification-overlay">
-          <h3>Recently Added:</h3>
+        <div className="search-form notification-overlay">
+          <h2>Recently Added:</h2>
           {notifications.map((book, i) => (
             <div className="added-book-item" key={i}>
               📘 &quot;{book.title}&quot; <small>by {book.author}</small>
@@ -82,20 +82,20 @@ export default function HomePage() {
       </div>
 
       {results.length > 0 && (
-        <div>
+        <div className="search-form notification-overlay">
           <h2>Search Results:</h2>
-          <ul>
-            {results.map((book) => (
-              <li key={book.id}>
-                {book.title} by {book.author} —{' '}
-                <Link href={`/${book.shelfOwner}/${book.listId}`}>
-                  {book.shelfOwner.charAt(0).toUpperCase() + book.shelfOwner.slice(1)}&apos;s shelf
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+          {results.map((book) => (
+            <div key={book.id}>
+              📘 &quot;{book.title}&quot; <small>by {book.author} —{' '}</small>
+              <small><Link href={`/${book.shelfOwner}/${book.listId}`}>
+              {book.shelfOwner.charAt(0).toUpperCase() + book.shelfOwner.slice(1)}&apos;s shelf
+            </Link></small>
+              </div>
+      ))}
+    </div >
+    
+      )
+}
     </>
   );
 }
