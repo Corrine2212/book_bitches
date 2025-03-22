@@ -33,9 +33,14 @@ export default function HomePage() {
 </form>
      
 
-      <div>
-      <Link href="/corrine">{"Corrine's Shelf"}</Link> | <Link href="/beth">{"Beth's Shelf"}</Link>
-      </div>
+<div className="shelf-buttons">
+  <Link href="/corrine">
+    <button className="shelf-link">Corrine's Shelf</button>
+  </Link>
+  <Link href="/beth">
+    <button className="shelf-link">Beth's Shelf</button>
+  </Link>
+</div>
 
       {results.length > 0 && (
         <div>
