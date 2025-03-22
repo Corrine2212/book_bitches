@@ -35,10 +35,10 @@ export default function HomePage() {
 
 <div className="shelf-buttons">
   <Link href="/corrine">
-    <button className="shelf-link">Corrine's Shelf</button>
+    <button className="shelf-link">{"Corrine's Shelf"}</button>
   </Link>
   <Link href="/beth">
-    <button className="shelf-link">Beth's Shelf</button>
+    <button className="shelf-link">{"Beth's Shelf"}</button>
   </Link>
 </div>
 
