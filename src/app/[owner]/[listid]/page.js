@@ -123,6 +123,17 @@ export default function ShelfPage() {
   }, [owner, listid]);
 
   const handleAdd = async () => {
+    const duplicate = books.find(
+      (book) =>
+        book.title.toLowerCase() === title.toLowerCase() &&
+        book.author.toLowerCase() === author.toLowerCase()
+    );
+
+    if (duplicate) {
+      alert('This book already exists on your shelf.');
+      return;
+    }
+
     await addBook({
       title,
       author,
@@ -210,7 +221,12 @@ export default function ShelfPage() {
                       Edit
                     </button>
                     <button
-                      onClick={() => deleteBook(book.id)}
+                      onClick={() => {
+                        const confirmDelete = window.confirm(`Are you sure you want to delete "${book.title}" by ${book.author}?`);
+                        if (confirmDelete) {
+                          deleteBook(book.id);
+                        }
+                      }}
                       className="button delete"
                     >
                       Delete
