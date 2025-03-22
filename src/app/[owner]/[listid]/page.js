@@ -3,7 +3,7 @@ export const dynamic = 'force-static';
 import { useParams } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import { db } from '../../../lib/firebase';
-import { addBook, deleteBook, updateBook } from '../../../lib/firebaseUtils';
+import { addBook, deleteBook, updateBook, addNotification } from '../../../lib/firebaseUtils';
 import {
   collection,
   query,
@@ -26,18 +26,9 @@ export default function ShelfPage() {
   const [editingId, setEditingId] = useState(null);
   const [editTitle, setEditTitle] = useState('');
   const [editAuthor, setEditAuthor] = useState('');
-  const [notifications, setNotifications] = useState([]);
-  const [showNotifications, setShowNotifications] = useState(false);
   const isFirstLoadRef = useRef(true);
   const initialLoadTimeRef = useRef(null);
   const knownIdsRef = useRef(new Set());
-
-  useEffect(() => {
-    const savedNotifs = localStorage.getItem(`notifs-${owner}-${listid}`);
-    if (savedNotifs) {
-      setNotifications(JSON.parse(savedNotifs));
-    }
-  }, [owner, listid]);
 
   useEffect(() => {
     if (!owner || !listid) return;
@@ -88,38 +79,9 @@ export default function ShelfPage() {
           }
         }, 100);
       }
-
-      const newBooks = addedBooks
-        .filter(b => b.createdAt?.toMillis?.() > initialLoadTimeRef.current);
-
-      if (newBooks.length > 0) {
-        const enrichedNewBooks = newBooks.map(book => ({
-          ...book,
-          createdAt: book.createdAt ?? { toMillis: () => Date.now() },
-        }));
-
-        const prevNotifs = JSON.parse(localStorage.getItem(`notifs-${owner}-${listid}`) || '[]');
-
-        const merged = [...enrichedNewBooks, ...prevNotifs]
-          .filter((book, index, self) =>
-            index === self.findIndex(b => b.id === book.id)
-          )
-          .sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0))
-          .slice(0, 5);
-
-        localStorage.setItem(`notifs-${owner}-${listid}`, JSON.stringify(merged));
-        setNotifications(merged);
-      }
     });
 
     return () => unsubscribe();
-  }, [owner, listid]);
-
-  useEffect(() => {
-    const viewed = localStorage.getItem(`notifViewed-${owner}-${listid}`) === 'true';
-    if (viewed) {
-      setNotifications((prev) => [...prev]);
-    }
   }, [owner, listid]);
 
   const handleAdd = async () => {
@@ -134,13 +96,24 @@ export default function ShelfPage() {
       return;
     }
 
+    const createdAt = new Date();
+
     await addBook({
       title,
       author,
       shelfOwner: owner,
       listId: listid,
-      createdAt: new Date(),
+      createdAt,
     });
+
+    await addNotification({
+      title,
+      author,
+      shelfOwner: owner,
+      listId: listid,
+      createdAt,
+    });
+
     setTitle('');
     setAuthor('');
   };
@@ -204,7 +177,6 @@ export default function ShelfPage() {
                 </>
               ) : (
                 <>
-
                   <div className="book-info">
                     <strong>{book.title}</strong>
                     <span>by {book.author}</span>
@@ -232,15 +204,12 @@ export default function ShelfPage() {
                       Delete
                     </button>
                   </div>
-
                 </>
               )}
             </div>
           ))}
         </div>
-
       </div>
-
-    </ >
+    </>
   );
 }

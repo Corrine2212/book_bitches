@@ -58,14 +58,7 @@ export default function HomePage() {
         <button type="submit">Search</button>
       </form>
 
-      <div className="shelf-buttons main_btn">
-        <Link href="/corrine">
-          <button className="shelf-link">Corrine&apos;s Shelf</button>
-        </Link>
-        <Link href="/beth">
-          <button className="shelf-link">Beth&apos;s Shelf</button>
-        </Link>
-      </div>
+
 
       {results.length > 0 && (
         <div className="search-form notification-overlay">
@@ -80,6 +73,15 @@ export default function HomePage() {
           ))}
         </div>
       )}
+
+      <div className="shelf-buttons main_btn">
+        <Link href="/corrine">
+          <button className="shelf-link">Corrine&apos;s Shelf</button>
+        </Link>
+        <Link href="/beth">
+          <button className="shelf-link">Beth&apos;s Shelf</button>
+        </Link>
+      </div>
     </>
   );
 }
