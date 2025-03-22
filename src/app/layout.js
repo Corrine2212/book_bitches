@@ -1,4 +1,5 @@
 import './globals.css';
+import 'next-pwa/register';
 import { Geist, Geist_Mono } from 'next/font/google';
 import Header from '../components/Header'; // ← import your client component
 
@@ -24,9 +25,15 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <body className={`${geistSans.variable} ${geistMono.variable}`}>
-      <Header />
-      <main>{children}</main>
-    </body>
+    <html lang="en">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#4f46e5" />
+      </head>
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <Header />
+        <main>{children}</main>
+      </body>
+    </html>
   );
 }
