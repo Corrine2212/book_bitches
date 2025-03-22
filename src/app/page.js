@@ -34,7 +34,7 @@ export default function HomePage() {
      
 
       <div>
-      <Link href="/corrine">{"Corrine's Shelf"}</Link>| <Link href="/beth">{"Beth's Shelf"}</Link>
+      <Link href="/corrine">{"Corrine's Shelf"}</Link> | <Link href="/beth">{"Beth's Shelf"}</Link>
       </div>
 
       {results.length > 0 && (
