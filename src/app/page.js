@@ -43,13 +43,13 @@ export default function HomePage() {
         <div className="notification-overlay">
           <h3>Recently Added:</h3>
           {notifications.map((book, i) => (
-            <div
-            className="added-book-item" 
-            key={i}>
-              📘 "{book.title}" <small>by {book.author}</small>
-              <small> —{' '}<Link href={`/${book.shelfOwner}/main`}>
-                {book.shelfOwner.charAt(0).toUpperCase() + book.shelfOwner.slice(1)}’s Shelf
-              </Link></small>
+            <div className="added-book-item" key={i}>
+              📘 &quot;{book.title}&quot; <small>by {book.author}</small>
+              <small> —{' '}
+                <Link href={`/${book.shelfOwner}/main`}>
+                  {book.shelfOwner.charAt(0).toUpperCase() + book.shelfOwner.slice(1)}&rsquo;s Shelf
+                </Link>
+              </small>
               <br />
               <small>{new Date(book.createdAt?.seconds * 1000).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}</small>
             </div>
@@ -74,10 +74,10 @@ export default function HomePage() {
 
       <div className="shelf-buttons main_btn">
         <Link href="/corrine">
-          <button className="shelf-link">Corrine's Shelf</button>
+          <button className="shelf-link">Corrine&apos;s Shelf</button>
         </Link>
         <Link href="/beth">
-          <button className="shelf-link">Beth's Shelf</button>
+          <button className="shelf-link">Beth&apos;s Shelf</button>
         </Link>
       </div>
 
