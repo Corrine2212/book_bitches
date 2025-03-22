@@ -55,7 +55,7 @@ export default function ShelfPage() {
 
   return (
     <main className="shelf-container">
-      <h1>{owner === "corrine" ? "Corrine’s Shelf" : "Beth’s Shelf"}</h1>
+      <h1>{owner === "corrine" ? "Corrine&apos;s Shelf" : "Beth&apos;s Shelf"}</h1>
 
       <div className="inputStack">
         <input
