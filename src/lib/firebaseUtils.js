@@ -1,5 +1,5 @@
 // /lib/firebaseUtils.js
-import { collection, addDoc, getDocs, query, where, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, where, deleteDoc, doc, updateDoc, orderBy, limit, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/firebase";
 
 export async function addBook({ title, author, shelfOwner, listId }) {
@@ -33,4 +33,34 @@ export async function deleteBook(bookId) {
 
 export async function updateBook(bookId, updatedFields) {
   await updateDoc(doc(db, 'books', bookId), updatedFields);
+}
+
+// 🔔 Notifications
+export async function addNotification(data) {
+  await addDoc(collection(db, 'notifications'), {
+    ...data,
+    createdAt: new Date(),
+  });
+}
+
+export async function getRecentNotifications(limitCount = 6) {
+  const q = query(
+    collection(db, 'notifications'),
+    orderBy('createdAt', 'desc'),
+    limit(limitCount)
+  );
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
+
+export function listenToRecentNotifications(callback, limitCount = 6) {
+  const q = query(
+    collection(db, 'notifications'),
+    orderBy('createdAt', 'desc'),
+    limit(limitCount)
+  );
+  return onSnapshot(q, (snapshot) => {
+    const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    callback(data);
+  });
 }

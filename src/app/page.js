@@ -1,10 +1,8 @@
 'use client';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { searchBooks } from '../lib/firebaseUtils';
+import { searchBooks, getRecentNotifications } from '../lib/firebaseUtils';
 import { useNotification } from '../context/NotificationContext';
-import { db } from '../lib/firebase';
-import { collection, getDocs } from 'firebase/firestore';
 
 export default function HomePage() {
   const { showNotifications } = useNotification();
@@ -13,23 +11,11 @@ export default function HomePage() {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    const fetchValidBooks = async () => {
-      const notifsCorrine = JSON.parse(localStorage.getItem('notifs-corrine-main') || '[]');
-      const notifsBeth = JSON.parse(localStorage.getItem('notifs-beth-main') || '[]');
-      const combined = [...notifsCorrine, ...notifsBeth];
-
-      const snapshot = await getDocs(collection(db, 'books'));
-      const currentBooks = snapshot.docs.map(doc => doc.id);
-
-      const validNotifications = combined
-        .filter(book => currentBooks.includes(book.id))
-        .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
-        .slice(0, 6);
-
-      setNotifications(validNotifications);
+    const fetchRecent = async () => {
+      const recent = await getRecentNotifications();
+      setNotifications(recent);
     };
-
-    fetchValidBooks();
+    fetchRecent();
   }, []);
 
   const handleSearch = async () => {
@@ -88,14 +74,12 @@ export default function HomePage() {
             <div key={book.id}>
               📘 &quot;{book.title}&quot; <small>by {book.author} —{' '}</small>
               <small><Link href={`/${book.shelfOwner}/${book.listId}`}>
-              {book.shelfOwner.charAt(0).toUpperCase() + book.shelfOwner.slice(1)}&apos;s shelf
-            </Link></small>
-              </div>
-      ))}
-    </div >
-    
-      )
-}
+                {book.shelfOwner.charAt(0).toUpperCase() + book.shelfOwner.slice(1)}&apos;s shelf
+              </Link></small>
+            </div>
+          ))}
+        </div>
+      )}
     </>
   );
 }
