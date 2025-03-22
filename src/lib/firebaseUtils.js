@@ -7,7 +7,7 @@ export async function addBook({ title, author, shelfOwner, listId }) {
     title,
     author,
     shelfOwner,
-    listId, // ✅ this was missing!
+    listId, 
     createdAt: new Date(),
   });
 }

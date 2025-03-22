@@ -33,7 +33,7 @@ export default function HomePage() {
 </form>
      
 
-<div className="shelf-buttons">
+<div className="shelf-buttons main_btn">
   <Link href="/corrine">
     <button className="shelf-link">{"Corrine's Shelf"}</button>
   </Link>
