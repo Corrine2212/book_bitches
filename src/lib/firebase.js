@@ -15,6 +15,7 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
+console.log("📦 Firebase config:", firebaseConfig);
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -28,9 +29,11 @@ const db = initializeFirestore(app, {
 
 // Optional: Set up Analytics only on the client
 let analytics = null;
-if (typeof window !== "undefined") {
+
+if (typeof window !== "undefined" && firebaseConfig.projectId) {
   import("firebase/analytics").then(({ getAnalytics }) => {
-    analytics = getAnalytics(app);
+    const analyticsInstance = getAnalytics(app);
+    // You can use analyticsInstance here if needed
   });
 }
 
