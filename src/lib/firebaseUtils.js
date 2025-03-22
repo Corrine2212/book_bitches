@@ -39,6 +39,7 @@ export async function updateBook(bookId, updatedFields) {
 export async function addNotification(data) {
   await addDoc(collection(db, 'notifications'), {
     ...data,
+    bookId: data.bookId,
     createdAt: new Date(),
   });
 }

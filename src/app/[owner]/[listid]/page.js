@@ -9,6 +9,8 @@ import {
   query,
   where,
   onSnapshot,
+  doc,
+  deleteDoc
 } from 'firebase/firestore';
 
 function toTitleCase(text) {
@@ -98,7 +100,7 @@ export default function ShelfPage() {
 
     const createdAt = new Date();
 
-    await addBook({
+    const bookRef = await addBook({
       title,
       author,
       shelfOwner: owner,
@@ -112,6 +114,7 @@ export default function ShelfPage() {
       shelfOwner: owner,
       listId: listid,
       createdAt,
+      bookId: bookRef.id,
     });
 
     setTitle('');
@@ -193,10 +196,11 @@ export default function ShelfPage() {
                       Edit
                     </button>
                     <button
-                      onClick={() => {
+                      onClick={async () => {
                         const confirmDelete = window.confirm(`Are you sure you want to delete "${book.title}" by ${book.author}?`);
                         if (confirmDelete) {
-                          deleteBook(book.id);
+                          await deleteBook(book.id);
+                          await deleteDoc(doc(db, 'notifications', book.id));
                         }
                       }}
                       className="button delete"

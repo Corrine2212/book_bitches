@@ -1,8 +1,10 @@
 'use client';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { searchBooks, getRecentNotifications } from '../lib/firebaseUtils';
+import { searchBooks, getRecentNotifications, getBooksByOwner } from '../lib/firebaseUtils';
 import { useNotification } from '../context/NotificationContext';
+import { db } from '../lib/firebase';
+import { getDocs, collection } from 'firebase/firestore';
 
 export default function HomePage() {
   const { showNotifications } = useNotification();
@@ -11,11 +13,15 @@ export default function HomePage() {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    const fetchRecent = async () => {
-      const recent = await getRecentNotifications();
-      setNotifications(recent);
+    const fetchValidNotifications = async () => {
+      const recentNotifs = await getRecentNotifications();
+      const booksSnapshot = await getDocs(collection(db, 'books'));
+      const currentBookIds = new Set(booksSnapshot.docs.map(doc => doc.id));
+      const validNotifs = recentNotifs.filter(notif => currentBookIds.has(notif.bookId));
+      setNotifications(validNotifs);
     };
-    fetchRecent();
+
+    fetchValidNotifications();
   }, []);
 
   const handleSearch = async () => {
@@ -57,8 +63,6 @@ export default function HomePage() {
         />
         <button type="submit">Search</button>
       </form>
-
-
 
       {results.length > 0 && (
         <div className="search-form notification-overlay">
