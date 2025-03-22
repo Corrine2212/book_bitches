@@ -1,34 +1,27 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Link from 'next/link';
-import styles from '../components/Header.module.css';
+import { useNotification } from '../context/NotificationContext';
+import styles from './Header.module.css';
 
 export default function Header() {
-  const [theme, setTheme] = useState('light');
+  const { showNotifications, toggleNotifications, count } = useNotification();
 
-  useEffect(() => {
-    const stored = localStorage.getItem('theme');
-    const systemPref = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    const initial = stored || systemPref;
-    setTheme(initial);
-    document.documentElement.setAttribute('data-theme', initial);
-  }, []);
-
-  const toggleTheme = () => {
-    const next = theme === 'light' ? 'dark' : 'light';
-    setTheme(next);
-    localStorage.setItem('theme', next);
-    document.documentElement.setAttribute('data-theme', next);
+  const handleClick = () => {
+    toggleNotifications();
   };
 
   return (
     <header className={styles.header}>
-      <Link href="/" className={styles.title}>
-        📚 Book Bitches
-      </Link>
-      <button onClick={toggleTheme} className={styles.toggleButton}>
-         {theme === 'light' ? 'Dark 🌙' : 'Light ☀️'}
-      </button>
+      <Link href="/" className={styles.title}>📚 Book Bitches</Link>
+      <div className={styles.notificationContainer}>
+        <button onClick={handleClick} className={styles.notificationBell}>
+          🔔
+          {count > 0 && !showNotifications && (
+            <span className={styles.notificationCount}>{count}</span>
+          )}
+        </button>
+      </div>
     </header>
   );
 }

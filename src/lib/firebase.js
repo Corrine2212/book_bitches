@@ -1,6 +1,6 @@
-// /firebase/config.js or config.ts
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import {
+  getFirestore,
   initializeFirestore,
   persistentLocalCache,
   persistentSingleTabManager,
@@ -15,25 +15,26 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
+
 console.log("📦 Firebase config:", firebaseConfig);
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
-// Initialize Firestore with modern offline persistence
-const db = initializeFirestore(app, {
-  localCache: persistentLocalCache({
-    tabManager: persistentSingleTabManager(),
-  }),
-});
+let db;
+try {
+  db = initializeFirestore(app, {
+    localCache: persistentLocalCache({
+      tabManager: persistentSingleTabManager(),
+    }),
+  });
+} catch (e) {
+  db = getFirestore(app); // fallback if already initialized
+}
 
-// Optional: Set up Analytics only on the client
 let analytics = null;
-
 if (typeof window !== "undefined" && firebaseConfig.projectId) {
   import("firebase/analytics").then(({ getAnalytics }) => {
-    const analyticsInstance = getAnalytics(app);
-    // You can use analyticsInstance here if needed
+    analytics = getAnalytics(app);
   });
 }
 

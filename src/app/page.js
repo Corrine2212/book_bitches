@@ -1,12 +1,120 @@
-// /app/page.tsx (HomePage)
+// 'use client';
+// import Link from 'next/link';
+// import { useState, useEffect } from 'react';
+// import { searchBooks } from '../lib/firebaseUtils';
+
+// export default function HomePage() {
+//   const [keyword, setKeyword] = useState('');
+//   const [results, setResults] = useState([]);
+//   const [notifications, setNotifications] = useState([]);
+//   const [showNotifications, setShowNotifications] = useState(false);
+
+//   useEffect(() => {
+//     const notifsCorrine = JSON.parse(localStorage.getItem('notifs-corrine-main') || '[]');
+//     const notifsBeth = JSON.parse(localStorage.getItem('notifs-beth-main') || '[]');
+//     const combined = [...notifsCorrine, ...notifsBeth]
+//       .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
+//       .slice(0, 10);
+//     setNotifications(combined);
+//   }, []);
+
+//   const handleSearch = async () => {
+//     const found = await searchBooks(keyword);
+//     setResults(found);
+//   };
+
+//   return (
+//     <main>
+//       <div className="notifications-container">
+//         <button onClick={() => setShowNotifications(!showNotifications)} className="notification-bell">
+//           🔔
+//           {notifications.length > 0 && !showNotifications && (
+//             <span className="notification-count">{notifications.length}</span>
+//           )}
+//         </button>
+//         {showNotifications && (
+//           <div className="notification-overlay">
+//             <h3>Recent Updates</h3>
+//             <div>
+//               {notifications.map((book, i) => (
+//                 <div key={i}>
+//                   📘 "{book.title}" by {book.author} on{' '}
+//                   <Link href={`/${book.shelfOwner}/main`}>
+//                     {book.shelfOwner.charAt(0).toUpperCase() + book.shelfOwner.slice(1)}’s Shelf
+//                   </Link>
+//                   <br />
+//                   <small>{new Date(book.createdAt?.seconds * 1000).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}</small>
+//                 </div>
+//               ))}
+//             </div>
+//           </div>
+//         )}
+//       </div>
+
+//       <form
+//         onSubmit={(e) => {
+//           e.preventDefault();
+//           handleSearch();
+//         }}
+//         className="search-form"
+//       >
+//         <input
+//           value={keyword}
+//           onChange={(e) => setKeyword(e.target.value)}
+//           placeholder="Search books..."
+//         />
+//         <button type="submit">Search</button>
+//       </form>
+
+//       <div className="shelf-buttons main_btn">
+//         <Link href="/corrine">
+//           <button className="shelf-link">{"Corrine's Shelf"}</button>
+//         </Link>
+//         <Link href="/beth">
+//           <button className="shelf-link">{"Beth's Shelf"}</button>
+//         </Link>
+//       </div>
+
+//       {results.length > 0 && (
+//         <div>
+//           <h2>Search Results:</h2>
+//           <ul>
+//             {results.map((book) => (
+//               <li key={book.id}>
+//                 {book.title} by {book.author} —{' '}
+//                 <Link href={`/${book.shelfOwner}/${book.listId}`}>
+//                   {book.shelfOwner.charAt(0).toUpperCase() + book.shelfOwner.slice(1)}&apos;s shelf
+//                 </Link>
+//               </li>
+//             ))}
+//           </ul>
+//         </div>
+//       )}
+
+//     </main>
+//   );
+// }
+
 'use client';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { searchBooks } from '../lib/firebaseUtils';
+import { useNotification } from '../context/NotificationContext';
 
 export default function HomePage() {
+  const { showNotifications } = useNotification();
   const [keyword, setKeyword] = useState('');
   const [results, setResults] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    const notifsCorrine = JSON.parse(localStorage.getItem('notifs-corrine-main') || '[]');
+    const notifsBeth = JSON.parse(localStorage.getItem('notifs-beth-main') || '[]');
+    const combined = [...notifsCorrine, ...notifsBeth]
+      .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
+      .slice(0, 5);
+    setNotifications(combined);
+  }, []);
 
   const handleSearch = async () => {
     const found = await searchBooks(keyword);
@@ -15,32 +123,45 @@ export default function HomePage() {
 
   return (
     <main>
-      <form
-  onSubmit={(e) => {
-    e.preventDefault(); // prevent page reload
-    handleSearch();
-  }}
-  className="search-form"
->
-  <input
-    value={keyword}
-    onChange={(e) => setKeyword(e.target.value)}
-    placeholder="Search books..."
-  />
-  <button type="submit">
-    Search
-  </button>
-</form>
-     
+      {showNotifications && (
+        <div className="notification-overlay">
+          <h3>Recent Updates</h3>
+          {notifications.map((book, i) => (
+            <div key={i}>
+              📘 "{book.title}" by {book.author} on{' '}
+              <Link href={`/${book.shelfOwner}/main`}>
+                {book.shelfOwner.charAt(0).toUpperCase() + book.shelfOwner.slice(1)}’s Shelf
+              </Link>
+              <br />
+              <small>{new Date(book.createdAt?.seconds * 1000).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}</small>
+            </div>
+          ))}
+        </div>
+      )}
 
-<div className="shelf-buttons main_btn">
-  <Link href="/corrine">
-    <button className="shelf-link">{"Corrine's Shelf"}</button>
-  </Link>
-  <Link href="/beth">
-    <button className="shelf-link">{"Beth's Shelf"}</button>
-  </Link>
-</div>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSearch();
+        }}
+        className="search-form"
+      >
+        <input
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          placeholder="Search books..."
+        />
+        <button type="submit">Search</button>
+      </form>
+
+      <div className="shelf-buttons main_btn">
+        <Link href="/corrine">
+          <button className="shelf-link">Corrine's Shelf</button>
+        </Link>
+        <Link href="/beth">
+          <button className="shelf-link">Beth's Shelf</button>
+        </Link>
+      </div>
 
       {results.length > 0 && (
         <div>
@@ -60,85 +181,3 @@ export default function HomePage() {
     </main>
   );
 }
-
-
-
-
-
-
-
-// "use client";
-
-// import Link from "next/link";
-// import { useSearch } from "../context/SearchContext";
-// import { useEffect, useState } from "react";
-// import { db } from "../lib/firebase";
-// import { collection, getDocs } from "firebase/firestore";
-
-// export default function Home() {
-//   const { searchQuery } = useSearch();
-//   const [results, setResults] = useState([]);
-
-//   useEffect(() => {
-//     const fetchAllBooks = async () => {
-//       if (!searchQuery.trim()) {
-//         setResults([]);
-//         return;
-//       }
-
-//       const snapshot = await getDocs(collection(db, "books"));
-//       const allBooks = snapshot.docs.map((doc) => ({
-//         id: doc.id,
-//         ...doc.data()
-//       }));
-
-//       const filtered = allBooks.filter((book) =>
-//         book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-//         book.author.toLowerCase().includes(searchQuery.toLowerCase())
-//       );
-
-//       setResults(filtered);
-//     };
-
-//     fetchAllBooks();
-//   }, [searchQuery]);
-
-//   return (
-//     <div>
-//       <h1>📚 Shared Book Shelves</h1>
-
-//       {searchQuery ? (
-//         <>
-//           <h2>Search Results</h2>
-//           {results.length === 0 ? (
-//             <p>No books found.</p>
-//           ) : (
-//             <ul>
-//               {results.map((book) => (
-//                 <li key={book.id}>
-//                   <strong>{book.title}</strong> <em>by {book.author}</em>
-//                   <br />
-//                   <Link href={`/shelf/${book.owner}`}>
-//                     <small>View on {book.owner === "corrine" ? "Corrine" : "Beth"}’s shelf</small>
-//                   </Link>
-//                 </li>
-//               ))}
-//             </ul>
-//           )}
-//         </>
-//       ) : (
-//         <>
-//           <p>Select a shelf to view:</p>
-//           <ul>
-//             <li>
-//               <Link href="/shelf/corrine">📖 Corrine’s Shelf</Link>
-//             </li>
-//             <li>
-//               <Link href="/shelf/beth">📖 Beth’s Shelf</Link>
-//             </li>
-//           </ul>
-//         </>
-//       )}
-//     </div>
-//   );
-// }

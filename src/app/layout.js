@@ -2,6 +2,8 @@ import './globals.css';
 import 'next-pwa/register';
 import { Geist, Geist_Mono } from 'next/font/google';
 import Header from '../components/Header'; // ← import your client component
+import Footer from '@/components/Footer';
+import { NotificationProvider } from '../context/NotificationContext';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -31,8 +33,11 @@ export default function RootLayout({ children }) {
         <meta name="theme-color" content="#4f46e5" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <Header />
-        <main>{children}</main>
+        <NotificationProvider>
+          <Header />
+          <main>{children}</main>
+        </NotificationProvider>
+        <Footer />
       </body>
     </html>
   );

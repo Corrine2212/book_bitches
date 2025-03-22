@@ -1,7 +1,7 @@
- 'use client';
+'use client';
 export const dynamic = 'force-static';
 import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { db } from '../../../lib/firebase';
 import { addBook, deleteBook, updateBook } from '../../../lib/firebaseUtils';
 import {
@@ -10,7 +10,6 @@ import {
   where,
   onSnapshot,
 } from 'firebase/firestore';
-
 
 function toTitleCase(text) {
   return text
@@ -27,9 +26,25 @@ export default function ShelfPage() {
   const [editingId, setEditingId] = useState(null);
   const [editTitle, setEditTitle] = useState('');
   const [editAuthor, setEditAuthor] = useState('');
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const isFirstLoadRef = useRef(true);
+  const initialLoadTimeRef = useRef(null);
+  const knownIdsRef = useRef(new Set());
+
+  useEffect(() => {
+    const savedNotifs = localStorage.getItem(`notifs-${owner}-${listid}`);
+    if (savedNotifs) {
+      setNotifications(JSON.parse(savedNotifs));
+    }
+  }, [owner, listid]);
 
   useEffect(() => {
     if (!owner || !listid) return;
+
+    if (!initialLoadTimeRef.current) {
+      initialLoadTimeRef.current = Date.now();
+    }
 
     const q = query(
       collection(db, 'books'),
@@ -38,24 +53,119 @@ export default function ShelfPage() {
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const liveBooks = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const liveBooks = snapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+        .sort((a, b) => {
+          const aTime = a.createdAt?.toMillis?.() || 0;
+          const bTime = b.createdAt?.toMillis?.() || 0;
+          return bTime - aTime;
+        });
+
+      const addedBooks = liveBooks.filter(b => !knownIdsRef.current.has(b.id));
+
+      if (isFirstLoadRef.current) {
+        isFirstLoadRef.current = false;
+        knownIdsRef.current = new Set(liveBooks.map(b => b.id));
+        setBooks(liveBooks);
+        return;
+      }
+
+      addedBooks.forEach(b => knownIdsRef.current.add(b.id));
       setBooks(liveBooks);
+
+      if (addedBooks.length > 0) {
+        setTimeout(() => {
+          const newBookElement = document.getElementById(`book-${addedBooks[0].id}`);
+          if (newBookElement) {
+            newBookElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            newBookElement.classList.add('highlight');
+            setTimeout(() => {
+              newBookElement.classList.remove('highlight');
+            }, 3000);
+          }
+        }, 100);
+      }
+
+      const newBooks = addedBooks
+        .filter(b => b.createdAt?.toMillis?.() > initialLoadTimeRef.current);
+
+      if (newBooks.length > 0) {
+        const enrichedNewBooks = newBooks.map(book => ({
+          ...book,
+          createdAt: book.createdAt ?? { toMillis: () => Date.now() },
+        }));
+
+        const prevNotifs = JSON.parse(localStorage.getItem(`notifs-${owner}-${listid}`) || '[]');
+
+        const merged = [...enrichedNewBooks, ...prevNotifs]
+          .filter((book, index, self) =>
+            index === self.findIndex(b => b.id === book.id)
+          )
+          .sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0))
+          .slice(0, 5);
+
+        localStorage.setItem(`notifs-${owner}-${listid}`, JSON.stringify(merged));
+        setNotifications(merged);
+      }
     });
 
     return () => unsubscribe();
   }, [owner, listid]);
 
+  useEffect(() => {
+    const viewed = localStorage.getItem(`notifViewed-${owner}-${listid}`) === 'true';
+    if (viewed) {
+      setNotifications((prev) => [...prev]);
+    }
+  }, [owner, listid]);
+
   const handleAdd = async () => {
-    await addBook({ title, author, shelfOwner: owner, listId: listid });
+    await addBook({
+      title,
+      author,
+      shelfOwner: owner,
+      listId: listid,
+      createdAt: new Date(),
+    });
     setTitle('');
     setAuthor('');
   };
 
   return (
     <main className="shelf-container">
+      <div className="notifications-container">
+        <button
+          onClick={() => {
+            const newShow = !showNotifications;
+            setShowNotifications(newShow);
+            if (newShow) {
+              localStorage.setItem(`notifViewed-${owner}-${listid}`, 'true');
+            }
+          }}
+          className="notification-bell styled-bell"
+        >
+          🔔
+          {notifications.length > 0 && !showNotifications && (
+            <span className="notification-count styled-count">{notifications.length}</span>
+          )}
+        </button>
+        {showNotifications && (
+          <div className="notification-overlay styled-overlay">
+            <h3>Recent Updates</h3>
+            {notifications.map((book, i) => (
+              <div key={i} className="notification-entry styled-entry">
+                📘 "{book.title}" by {book.author}
+                <br />
+                <small>{new Date(book.createdAt?.seconds ? book.createdAt.seconds * 1000 : book.createdAt.toMillis()).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}</small>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       <h1>{owner === "corrine" ? "Corrine’s Shelf" : "Beth’s Shelf"}</h1>
 
       <div className="inputStack">
@@ -84,7 +194,7 @@ export default function ShelfPage() {
         </thead>
         <tbody>
           {books.map((book) => (
-            <tr key={book.id}>
+            <tr key={book.id} id={`book-${book.id}`}>
               {editingId === book.id ? (
                 <>
                   <td>
@@ -148,6 +258,12 @@ export default function ShelfPage() {
           ))}
         </tbody>
       </table>
+      <style jsx>{`
+        .highlight {
+          background-color: #fffbcc;
+          transition: background-color 0.5s ease;
+        }
+      `}</style>
     </main>
   );
 }

@@ -1,0 +1,21 @@
+.footer {
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.9rem;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-color);
+    background-color: var(--bg-color);
+  }
+  
+  /* light/dark theme vars
+  :root {
+    --text-color: #111;
+    --bg-color: #f0f0f0;
+    --border-color: #ccc;
+  }
+  
+  [data-theme='dark'] {
+    --text-color: #eee;
+    --bg-color: #1e1e1e;
+    --border-color: #444;
+  } */
