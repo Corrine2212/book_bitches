@@ -34,7 +34,7 @@ export default function HomePage() {
      
 
       <div>
-        <Link href="/corrine">Corrine's Shelf</Link> | <Link href="/beth">Beth's Shelf</Link>
+      <Link href="/corrine">{"Corrine's Shelf"}</Link>| <Link href="/beth">{"Beth's Shelf"}</Link>
       </div>
 
       {results.length > 0 && (
@@ -45,7 +45,7 @@ export default function HomePage() {
               <li key={book.id}>
                 {book.title} by {book.author} —{' '}
                 <Link href={`/${book.shelfOwner}/${book.listId}`}>
-                  {book.shelfOwner.charAt(0).toUpperCase() + book.shelfOwner.slice(1)}'s shelf
+                  {book.shelfOwner.charAt(0).toUpperCase() + book.shelfOwner.slice(1)}&apos;s shelf
                 </Link>
               </li>
             ))}
