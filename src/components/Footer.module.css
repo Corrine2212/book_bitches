@@ -11,7 +11,7 @@
   background-color: var(--accent);
   z-index: 10;
   display: flex;
-  border-radius: 40px 40px 0px 0px;
+  border-radius: 50px 50px 0px 0px;
 }
 
 .half {
@@ -30,7 +30,7 @@
 
 .beth-half {
   background-color: #4338ca;
-  border-radius: 0px 40px 0px 0px;
+  border-radius: 0px 50px 0px 0px;
 }
 
 .footer-link {

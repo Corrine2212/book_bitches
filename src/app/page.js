@@ -36,16 +36,16 @@ export default function HomePage() {
           <h2>Recently Added:</h2>
           {notifications.map((book, i) => (
             <div className="added-book-item" key={i}>
-              📘 &quot;{book.title}&quot; 
+              📘 &quot;{book.title}&quot;
               <div>
-              <small>by {book.author}</small>
-              <small> —{' '}
-                <Link href={`/${book.shelfOwner}/main`}>
-                  {book.shelfOwner.charAt(0).toUpperCase() + book.shelfOwner.slice(1)}&rsquo;s Shelf
-                </Link>
-              </small>
-              <br />
-              <small>{new Date(book.createdAt?.seconds * 1000).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}</small>
+                <small>by {book.author}</small>
+                <small> —{' '}
+                  <Link href={`/${book.shelfOwner}/main`}>
+                    {book.shelfOwner.charAt(0).toUpperCase() + book.shelfOwner.slice(1)}&rsquo;s Shelf
+                  </Link>
+                </small>
+                <br />
+                <small>{new Date(book.createdAt?.seconds * 1000).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}</small>
               </div>
             </div>
           ))}
@@ -75,6 +75,11 @@ export default function HomePage() {
             <div key={book.id}>
               📘 &quot;{book.title}&quot;
               <div>
+                <img
+                  src={`https://covers.openlibrary.org/b/title/${encodeURIComponent(book.title)}-L.jpg`}
+                  alt={`Cover for ${book.title}`}
+                  className="book-cover"
+                />
                 <small>by {book.author} —{' '}</small>
                 <small><Link href={`/${book.shelfOwner}/${book.listId}`}>
                   {book.shelfOwner.charAt(0).toUpperCase() + book.shelfOwner.slice(1)}&apos;s shelf
