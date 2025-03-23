@@ -36,7 +36,9 @@ export default function HomePage() {
           <h2>Recently Added:</h2>
           {notifications.map((book, i) => (
             <div className="added-book-item" key={i}>
-              📘 &quot;{book.title}&quot; <small>by {book.author}</small>
+              📘 &quot;{book.title}&quot; 
+              <div>
+              <small>by {book.author}</small>
               <small> —{' '}
                 <Link href={`/${book.shelfOwner}/main`}>
                   {book.shelfOwner.charAt(0).toUpperCase() + book.shelfOwner.slice(1)}&rsquo;s Shelf
@@ -44,6 +46,7 @@ export default function HomePage() {
               </small>
               <br />
               <small>{new Date(book.createdAt?.seconds * 1000).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}</small>
+              </div>
             </div>
           ))}
         </div>
@@ -57,7 +60,7 @@ export default function HomePage() {
         className="search-form"
       >
         <input
-        className="search-input"
+          className="search-input"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           placeholder="Search books..."
@@ -70,15 +73,20 @@ export default function HomePage() {
           <h2>Search Results:</h2>
           {results.map((book) => (
             <div key={book.id}>
-              📘 &quot;{book.title}&quot; <small>by {book.author} —{' '}</small>
-              <small><Link href={`/${book.shelfOwner}/${book.listId}`}>
-                {book.shelfOwner.charAt(0).toUpperCase() + book.shelfOwner.slice(1)}&apos;s shelf
-              </Link></small>
+              📘 &quot;{book.title}&quot;
+              <div>
+                <small>by {book.author} —{' '}</small>
+                <small><Link href={`/${book.shelfOwner}/${book.listId}`}>
+                  {book.shelfOwner.charAt(0).toUpperCase() + book.shelfOwner.slice(1)}&apos;s shelf
+                </Link></small>
+
+              </div>
+
             </div>
           ))}
         </div>
       )}
-{/* 
+      {/* 
       <div className="shelf-buttons main_btn">
 
           <Link href="/corrine">

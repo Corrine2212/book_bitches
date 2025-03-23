@@ -26,12 +26,16 @@ export default function Footer() {
   return (
     <footer className={styles.footer}>
       <div className={`${styles.half} ${styles['corrine-half']}`}>
+        <Link className={styles['footer-link']} href="/corrine">
         <FontAwesomeIcon icon={faDrumstickBite} size="1x" />
-        <Link className={styles['footer-link']} href="/corrine">Corrine&apos;s Shelf</Link>
+        Corrine&apos;s Shelf
+        </Link>
       </div>
       <div className={`${styles.half} ${styles['beth-half']}`}>
+        <Link className={styles['footer-link']} href="/beth">
         <FontAwesomeIcon icon={faCat} size="1x" />
-        <Link className={styles['footer-link']} href="/beth">Beth&apos;s Shelf</Link>
+        Beth&apos;s Shelf
+        </Link>
       </div>
 
     </footer >
