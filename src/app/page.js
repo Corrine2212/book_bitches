@@ -75,11 +75,6 @@ export default function HomePage() {
             <div key={book.id}>
               📘 &quot;{book.title}&quot;
               <div>
-                <img
-                  src={`https://covers.openlibrary.org/b/title/${encodeURIComponent(book.title)}-L.jpg`}
-                  alt={`Cover for ${book.title}`}
-                  className="book-cover"
-                />
                 <small>by {book.author} —{' '}</small>
                 <small><Link href={`/${book.shelfOwner}/${book.listId}`}>
                   {book.shelfOwner.charAt(0).toUpperCase() + book.shelfOwner.slice(1)}&apos;s shelf

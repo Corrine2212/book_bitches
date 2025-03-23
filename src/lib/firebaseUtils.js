@@ -2,13 +2,14 @@
 import { collection, addDoc, getDocs, query, where, deleteDoc, doc, updateDoc, orderBy, limit, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/firebase";
 
-export async function addBook({ title, author, shelfOwner, listId }) {
+export async function addBook({ title, author, shelfOwner, listId, createdAt, cover }) {
   return await addDoc(collection(db, "books"), {
     title,
     author,
     shelfOwner,
-    listId, 
-    createdAt: new Date(),
+    listId,
+    createdAt,
+    cover, // save cover to Firestore
   });
 }
 

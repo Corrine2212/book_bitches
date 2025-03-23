@@ -20,6 +20,18 @@ function toTitleCase(text) {
     .join(' ');
 }
 
+async function fetchBookCover(title, author) {
+  try {
+    const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(title)}+inauthor:${encodeURIComponent(author)}`);
+    const data = await res.json();
+    const cover = data.items?.[0]?.volumeInfo?.imageLinks?.thumbnail;
+    return cover || null;
+  } catch (error) {
+    console.error('Error fetching cover:', error);
+    return null;
+  }
+}
+
 export default function ShelfPage() {
   const { owner, listid } = useParams();
   const [books, setBooks] = useState([]);
@@ -45,29 +57,30 @@ export default function ShelfPage() {
       where('listId', '==', listid)
     );
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const liveBooks = snapshot.docs
-        .map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-        .sort((a, b) => {
-          const aTime = a.createdAt?.toMillis?.() || 0;
-          const bTime = b.createdAt?.toMillis?.() || 0;
-          return bTime - aTime;
-        });
+    const unsubscribe = onSnapshot(q, async (snapshot) => {
+      const bookDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const booksWithCovers = await Promise.all(bookDocs.map(async (book) => {
+        const cover = await fetchBookCover(book.title, book.author);
+        return { ...book, cover };
+      }));
 
-      const addedBooks = liveBooks.filter(b => !knownIdsRef.current.has(b.id));
+      const sortedBooks = booksWithCovers.sort((a, b) => {
+        const aTime = a.createdAt?.toMillis?.() || 0;
+        const bTime = b.createdAt?.toMillis?.() || 0;
+        return bTime - aTime;
+      });
+
+      const addedBooks = sortedBooks.filter(b => !knownIdsRef.current.has(b.id));
 
       if (isFirstLoadRef.current) {
         isFirstLoadRef.current = false;
-        knownIdsRef.current = new Set(liveBooks.map(b => b.id));
-        setBooks(liveBooks);
+        knownIdsRef.current = new Set(sortedBooks.map(b => b.id));
+        setBooks(sortedBooks);
         return;
       }
 
       addedBooks.forEach(b => knownIdsRef.current.add(b.id));
-      setBooks(liveBooks);
+      setBooks(sortedBooks);
 
       if (addedBooks.length > 0) {
         setTimeout(() => {
@@ -99,6 +112,7 @@ export default function ShelfPage() {
     }
 
     const createdAt = new Date();
+    const cover = await fetchBookCover(title, author);
 
     const bookRef = await addBook({
       title,
@@ -181,32 +195,51 @@ export default function ShelfPage() {
               ) : (
                 <>
                   <div className="book-info">
-                    <strong>{book.title}</strong>
-                    <span>by {book.author}</span>
-                  </div>
-                  <div className="button-group">
-                    <button
-                      onClick={() => {
-                        setEditingId(book.id);
-                        setEditTitle(book.title);
-                        setEditAuthor(book.author);
-                      }}
-                      className="button edit"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={async () => {
-                        const confirmDelete = window.confirm(`Are you sure you want to delete "${book.title}" by ${book.author}?`);
-                        if (confirmDelete) {
-                          await deleteBook(book.id);
-                          await deleteDoc(doc(db, 'notifications', book.id));
-                        }
-                      }}
-                      className="button delete"
-                    >
-                      Delete
-                    </button>
+                    <div className="book-info-wrapper">
+
+                      {/* <div className=""> */}
+                      <img
+                        src={book.cover || '/placeholder.png'}
+                        alt={`Cover for ${book.title}`}
+                        className="book-cover"
+                      />
+                      {/* </div> */}
+                      <div className="book-detail">
+                        <div className="book-text">
+                          <strong>
+                            <h3>
+                              {book.title}
+                            </h3>
+                          </strong>
+                          <span>by {book.author}</span>
+                        </div>
+                        <div className="button-group">
+                          <button
+                            onClick={() => {
+                              setEditingId(book.id);
+                              setEditTitle(book.title);
+                              setEditAuthor(book.author);
+                            }}
+                            className="button edit"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={async () => {
+                              const confirmDelete = window.confirm(`Are you sure you want to delete "${book.title}" by ${book.author}?`);
+                              if (confirmDelete) {
+                                await deleteBook(book.id);
+                                await deleteDoc(doc(db, 'notifications', book.id));
+                              }
+                            }}
+                            className="button delete"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
                   </div>
                 </>
               )}
@@ -216,4 +249,5 @@ export default function ShelfPage() {
       </div>
     </>
   );
+
 }
