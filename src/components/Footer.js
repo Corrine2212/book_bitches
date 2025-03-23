@@ -1,6 +1,9 @@
 'use client';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import styles from './Footer.module.css'; // update if needed
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCat, faDrumstickBite } from '@fortawesome/free-solid-svg-icons';
 
 export default function Footer() {
   const [theme, setTheme] = useState('light');
@@ -13,18 +16,24 @@ export default function Footer() {
     document.documentElement.setAttribute('data-theme', initial);
   }, []);
 
-  const toggleTheme = () => {
-    const next = theme === 'light' ? 'dark' : 'light';
-    setTheme(next);
-    localStorage.setItem('theme', next);
-    document.documentElement.setAttribute('data-theme', next);
-  };
+  // const toggleTheme = () => {
+  //   const next = theme === 'light' ? 'dark' : 'light';
+  //   setTheme(next);
+  //   localStorage.setItem('theme', next);
+  //   document.documentElement.setAttribute('data-theme', next);
+  // };
 
   return (
     <footer className={styles.footer}>
-      <button onClick={toggleTheme} className={styles.toggleButton}>
-        {theme === 'light' ? 'Dark 🌙' : 'Light ☀️'}
-      </button>
-    </footer>
+      <div className={`${styles.half} ${styles['corrine-half']}`}>
+        <FontAwesomeIcon icon={faDrumstickBite} size="1x" />
+        <Link className={styles['footer-link']} href="/corrine">Corrine&apos;s Shelf</Link>
+      </div>
+      <div className={`${styles.half} ${styles['beth-half']}`}>
+        <FontAwesomeIcon icon={faCat} size="1x" />
+        <Link className={styles['footer-link']} href="/beth">Beth&apos;s Shelf</Link>
+      </div>
+
+    </footer >
   );
 }

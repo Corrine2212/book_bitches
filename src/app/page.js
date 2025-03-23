@@ -57,6 +57,7 @@ export default function HomePage() {
         className="search-form"
       >
         <input
+        className="search-input"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           placeholder="Search books..."
@@ -77,15 +78,16 @@ export default function HomePage() {
           ))}
         </div>
       )}
-
+{/* 
       <div className="shelf-buttons main_btn">
-        <Link href="/corrine">
-          <button className="shelf-link">Corrine&apos;s Shelf</button>
-        </Link>
-        <Link href="/beth">
-          <button className="shelf-link">Beth&apos;s Shelf</button>
-        </Link>
-      </div>
+
+          <Link href="/corrine">
+            <button className="shelf-link">Corrine&apos;s Shelf</button>
+          </Link>
+          <Link href="/beth">
+            <button className="shelf-link">Beth&apos;s Shelf</button>
+          </Link>
+      </div> */}
     </>
   );
 }

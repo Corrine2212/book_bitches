@@ -1,21 +1,82 @@
 .footer {
-    text-align: center;
-    padding: 1rem;
-    font-size: 0.9rem;
-    border-top: 1px solid var(--border-color);
-    color: var(--text-color);
-    background-color: var(--bg-color);
-  }
-  
-  /* light/dark theme vars
-  :root {
-    --text-color: #111;
-    --bg-color: #f0f0f0;
-    --border-color: #ccc;
-  }
-  
-  [data-theme='dark'] {
-    --text-color: #eee;
-    --bg-color: #1e1e1e;
-    --border-color: #444;
-  } */
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 4rem;
+  text-align: center;
+  /* padding: 1.5rem 0rem 1.5rem 0rem; */
+  font-size: 0.9rem;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-color);
+  background-color: var(--accent);
+  z-index: 10;
+  display: flex;
+}
+
+.half {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.corrine-half {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #f1f1f1;
+}
+
+.beth-half {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #4338ca;
+}
+
+.footer-link {
+  color: white;
+}
+
+/* .linksContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.links-container a {
+  text-decoration: none;
+  color: black;
+  font-weight: bold;
+}
+
+
+.links-container a:hover {
+  text-decoration: underline; */
+/* } */
+
+/* Reset button style */
+/* .button {
+  all: unset;
+  cursor: pointer;
+} */
+
+
+/* 
+.footerButtons {
+  color: #fff !important;
+  font-weight: bold;
+  text-decoration: none;
+}
+.footerButtons:nth-child(2) {
+  background-color: #f1f1f1;
+} */
