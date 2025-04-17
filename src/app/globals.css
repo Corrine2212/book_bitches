@@ -1,5 +1,15 @@
 :root {
-  --background: #fdfdfd;
+
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+  --accent: #6159ff;
+  --accent-hover: #a5b4fc;
+  --border: #334155;
+  --input-bg: #1e293b;
+  --input-border: #475569;
+  --input-focus: #818cf8;
+
+  /* --background: #fdfdfd;
   --foreground: #111827;
   --accent: #6159ff;
   --accent-hover: #4338ca;
@@ -7,7 +17,7 @@
   --border: #e5e7eb;
   --input-bg: #ffffff;
   --input-border: #d1d5db;
-  --input-focus: #6366f1;
+  --input-focus: #6366f1; */
 }
 
 :root[data-theme='dark'] {
